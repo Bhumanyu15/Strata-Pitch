@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bhumanyu Singh Ranawat — Strata Decision Technology</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+:root{
+  --teal:#0a7c6e;--teal2:#0d9e8c;--teal3:#d0eeea;
+  --gold:#c49a2e;--gold2:#e8b84b;
+  --ink:#0d0f0e;--paper:#f6f3ec;--slate:#2a3b44;--muted:#687880;--line:#ddd8cc;--white:#ffffff;
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);overflow-x:hidden}
+
+/* CURSOR */
+.cursor{width:10px;height:10px;background:var(--teal);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s}
+.cursor-ring{width:34px;height:34px;border:1.5px solid var(--teal);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .1s ease;opacity:.45}
+
+/* PROGRESS */
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--teal),var(--gold));z-index:1000;width:0%;transition:width .1s linear}
+
+/* NAV */
+nav{position:fixed;top:3px;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 3rem;height:58px;background:rgba(246,243,236,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);transition:box-shadow .3s}
+nav.scrolled{box-shadow:0 4px 30px rgba(0,0,0,.08)}
+.nav-logo{font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);font-weight:700}
+.nav-links{display:flex;gap:1.8rem;list-style:none}
+.nav-links a{font-size:.76rem;font-weight:500;color:var(--muted);text-decoration:none;letter-spacing:.04em;padding:4px 0;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--teal);border-color:var(--teal)}
+
+/* HERO */
+#hero{min-height:100vh;display:grid;grid-template-columns:55% 45%;position:relative;overflow:hidden}
+.shape{position:absolute;border-radius:50%;pointer-events:none}
+.shape-1{width:600px;height:600px;background:radial-gradient(circle,rgba(10,124,110,.12),transparent 70%);top:-150px;right:-100px;animation:float1 8s ease-in-out infinite}
+.shape-2{width:300px;height:300px;background:radial-gradient(circle,rgba(196,154,46,.1),transparent 70%);bottom:100px;left:200px;animation:float2 10s ease-in-out infinite}
+@keyframes float1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-20px,30px) scale(1.05)}}
+@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(15px,-20px)}}
+
+.hero-left{padding:120px 4rem 4rem 5rem;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.hero-tag{display:inline-flex;align-items:center;gap:.6rem;font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:1.5rem;opacity:0;animation:up .7s .2s ease forwards}
+.hero-tag::before{content:'';width:2rem;height:1px;background:var(--teal)}
+.hero-name{font-family:'Playfair Display',Georgia,serif;font-size:clamp(3rem,5.5vw,6rem);font-weight:700;line-height:1;color:var(--ink);margin-bottom:.3rem;opacity:0;animation:up .7s .4s ease forwards}
+.hero-name span{color:var(--teal)}
+.hero-role{font-family:'Space Mono',monospace;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem;font-weight:700;opacity:0;animation:up .7s .6s ease forwards}
+.hero-pitch{font-size:1.1rem;font-weight:300;line-height:1.75;color:var(--slate);max-width:42ch;margin-bottom:2.5rem;opacity:0;animation:up .7s .8s ease forwards}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;opacity:0;animation:up .7s 1s ease forwards}
+@keyframes up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.8rem;font-size:.78rem;font-weight:600;letter-spacing:.06em;text-decoration:none;border:none;cursor:pointer;transition:all .25s ease;position:relative;overflow:hidden}
+.btn-primary{background:var(--teal);color:white}
+.btn-primary:hover{background:var(--teal2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(10,124,110,.3)}
+.btn-outline{background:transparent;color:var(--teal);border:1.5px solid var(--teal)}
+.btn-outline:hover{background:var(--teal3);transform:translateY(-2px)}
+
+.hero-right{background:var(--ink);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:5rem 3rem}
+.hero-right::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(10,124,110,.2),transparent 70%);top:-100px;right:-100px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;width:100%;position:relative;z-index:2}
+.stat-box{background:rgba(255,255,255,.04);padding:1.8rem 1.5rem;border-top:2px solid rgba(255,255,255,.05);transition:background .3s;cursor:default}
+.stat-box:hover{background:rgba(13,158,140,.1);border-top-color:var(--teal2)}
+.stat-num{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;color:var(--teal2);line-height:1;margin-bottom:.4rem}
+.stat-label{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);line-height:1.5}
+
+/* SECTIONS */
+.section{padding:6rem 5rem}
+.section-dark{background:var(--ink);color:var(--white)}
+.section-light{background:var(--paper)}
+.section-cream{background:#eee9de}
+
+.section-header{display:flex;align-items:center;gap:1.2rem;margin-bottom:3.5rem}
+.sec-num{font-family:'Space Mono',monospace;font-size:.63rem;color:var(--teal2);letter-spacing:.1em}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:700;line-height:1.1}
+.section-dark .sec-title{color:var(--white)}
+.sec-rule{flex:1;height:1px;background:rgba(255,255,255,.1);margin-left:.5rem}
+.section-light .sec-rule,.section-cream .sec-rule{background:var(--line)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+
+/* INSIGHT CARDS */
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:3rem}
+.insight-card{background:rgba(255,255,255,.04);padding:2rem 1.8rem;border-top:2px solid transparent;transition:all .3s ease;cursor:default}
+.insight-card:hover{background:rgba(13,158,140,.1);border-top-color:var(--teal2);transform:translateY(-4px)}
+.insight-icon{font-size:1.6rem;margin-bottom:1rem;display:block}
+.insight-head{font-family:'Space Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal2);margin-bottom:.7rem}
+.insight-text{font-size:.92rem;font-weight:300;line-height:1.7;color:rgba(255,255,255,.65)}
+.thesis-box{background:rgba(10,124,110,.12);border-left:3px solid var(--teal2);padding:2rem 2.5rem}
+.thesis-box p{font-family:'Playfair Display',serif;font-size:1.35rem;font-style:italic;line-height:1.65;color:rgba(255,255,255,.88)}
+
+/* COUNTER BAR */
+.counter-bar{background:var(--teal);padding:3.5rem 5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.counter-item{text-align:center;padding:1.5rem;border-right:1px solid rgba(255,255,255,.15)}
+.counter-item:last-child{border-right:none}
+.counter-val{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:700;color:white;line-height:1;margin-bottom:.4rem}
+.counter-label{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.65)}
+
+/* TABS */
+.tabs-nav{display:flex;border-bottom:2px solid var(--line);margin-bottom:2.5rem}
+.tab-btn{padding:.7rem 1.8rem;font-size:.8rem;font-weight:600;background:none;border:none;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;letter-spacing:.04em}
+.tab-btn.active{color:var(--teal);border-bottom-color:var(--teal)}
+.tab-btn:hover:not(.active){color:var(--slate)}
+.tab-panel{display:none}.tab-panel.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.align-table{width:100%;border-collapse:collapse}
+.align-table thead tr{background:var(--ink)}
+.align-table thead th{padding:.9rem 1.2rem;text-align:left;font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--teal2)}
+.align-table tbody tr{border-bottom:1px solid var(--line);transition:background .2s}
+.align-table tbody tr:hover{background:var(--teal3)}
+.align-table td{padding:.9rem 1.2rem;font-size:.88rem;line-height:1.55;color:var(--slate);vertical-align:top}
+.align-table td:first-child{font-weight:600;color:var(--ink);width:28%}
+.impact{display:inline-block;background:rgba(10,124,110,.12);color:var(--teal);padding:1px 6px;border-radius:2px;font-weight:600;font-size:.82em}
+
+/* LETTER */
+.letter-wrap{max-width:760px;margin:0 auto;background:white;padding:4rem;box-shadow:0 4px 40px rgba(0,0,0,.08);position:relative}
+.letter-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--teal),var(--gold))}
+.letter-date{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted);margin-bottom:2rem}
+.letter-addr{margin-bottom:2rem}
+.letter-addr p{font-size:.9rem;line-height:1.7;color:var(--slate)}
+.letter-addr strong{font-weight:700;color:var(--ink)}
+.letter-body p{font-size:1rem;line-height:1.85;color:#3a4a55;margin-bottom:1.4rem}
+.letter-body strong{font-weight:700;color:var(--ink)}
+.letter-body em{color:var(--teal);font-style:italic}
+.letter-sig{margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--line)}
+.sig-name{font-family:'Playfair Display',serif;font-size:2rem;font-style:italic;color:var(--ink);margin-top:.5rem}
+.sig-contact{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);margin-top:.4rem}
+
+/* PLAN */
+.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.phase{background:rgba(255,255,255,.04);padding:2.5rem 2rem;border-top:3px solid transparent;transition:background .3s}
+.phase:hover{background:rgba(255,255,255,.07)}
+.phase-1{border-top-color:var(--teal2)}.phase-2{border-top-color:var(--gold2)}.phase-3{border-top-color:#a78bfa}
+.phase-label{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.3rem}
+.phase-1 .phase-label{color:var(--teal2)}.phase-2 .phase-label{color:var(--gold2)}.phase-3 .phase-label{color:#a78bfa}
+.phase-days{font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;color:white;line-height:1;margin-bottom:.2rem}
+.phase-theme{font-family:'Space Mono',monospace;font-size:.62rem;color:rgba(255,255,255,.4);margin-bottom:1.8rem}
+.phase ul{list-style:none}
+.phase ul li{font-size:.86rem;font-weight:300;line-height:1.6;color:rgba(255,255,255,.65);margin-bottom:.7rem;padding-left:1.1rem;position:relative}
+.phase ul li::before{content:'→';position:absolute;left:0;color:rgba(255,255,255,.25);font-size:.75rem;top:2px}
+
+/* SKILLS */
+.skills-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+.skill-cat-title{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:1.2rem;border-bottom:1px solid var(--line);padding-bottom:.5rem}
+.skill-bar-group{margin-bottom:1.2rem}
+.skill-bar-label{display:flex;justify-content:space-between;font-size:.8rem;font-weight:600;color:var(--slate);margin-bottom:.4rem}
+.skill-bar-label span:last-child{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--teal)}
+.skill-bar-track{height:5px;background:var(--line);border-radius:3px;overflow:hidden}
+.skill-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal2));border-radius:3px;width:0%;transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+.skill-bar-fill.gold{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.value-card{background:var(--ink);padding:1.8rem;margin-bottom:1rem;border-left:3px solid var(--teal);transition:transform .2s,box-shadow .2s}
+.value-card:hover{transform:translateX(5px)}
+.value-card-title{font-family:'Space Mono',monospace;font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold2);margin-bottom:.5rem}
+.value-card-text{font-size:.86rem;font-weight:300;line-height:1.65;color:rgba(255,255,255,.65)}
+
+/* ACCORDION */
+.exp-item{border-bottom:1px solid var(--line)}
+.exp-header{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 0;cursor:pointer;transition:color .2s;user-select:none}
+.exp-header:hover{color:var(--teal)}
+.exp-co{font-family:'Space Mono',monospace;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:var(--teal)}
+.exp-role-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--ink)}
+.exp-period{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);margin-top:.15rem}
+.exp-chevron{font-size:1.2rem;color:var(--muted);transition:transform .3s ease;flex-shrink:0}
+.exp-item.open .exp-chevron{transform:rotate(180deg);color:var(--teal)}
+.exp-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease}
+.exp-item.open .exp-body{max-height:600px;padding-bottom:1.5rem}
+.exp-body ul{list-style:none}
+.exp-body ul li{font-size:.9rem;line-height:1.65;color:var(--slate);padding:.4rem 0 .4rem 1.4rem;position:relative;border-bottom:1px solid var(--line)}
+.exp-body ul li:last-child{border-bottom:none}
+.exp-body ul li::before{content:'';position:absolute;left:0;top:.9rem;width:5px;height:1px;background:var(--teal)}
+.exp-body ul li .hi{font-weight:700;color:var(--teal)}
+.exp-tags{margin-top:.8rem;display:flex;flex-wrap:wrap;gap:.4rem}
+.exp-tag{display:inline-block;padding:.22rem .7rem;background:var(--teal3);color:var(--teal);font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+
+/* CLOSING */
+#closing{background:var(--ink);position:relative;overflow:hidden;padding:8rem 5rem;text-align:center}
+#closing::before{content:'';position:absolute;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(10,124,110,.15),transparent 60%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.closing-big{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5vw,4.8rem);font-weight:700;line-height:1.15;color:white;margin-bottom:1.5rem;position:relative;z-index:2}
+.closing-big em{color:var(--teal2);font-style:italic}
+.closing-sub{font-size:1.05rem;font-weight:300;color:rgba(255,255,255,.6);max-width:550px;margin:0 auto 3rem;line-height:1.75;position:relative;z-index:2}
+.contact-pills{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative;z-index:2}
+.contact-pill{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.4rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);font-size:.8rem;text-decoration:none;font-family:'Space Mono',monospace;letter-spacing:.04em;transition:all .2s}
+.contact-pill:hover{background:var(--teal);border-color:var(--teal);color:white}
+
+/* SCROLL TOP */
+#scroll-top{position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;background:var(--teal);color:white;border:none;border-radius:50%;font-size:1.1rem;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;z-index:400;display:flex;align-items:center;justify-content:center}
+#scroll-top.show{opacity:1;pointer-events:all}
+#scroll-top:hover{background:var(--teal2);transform:scale(1.1)}
+
+/* RESPONSIVE */
+@media(max-width:1000px){
+  #hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .hero-left{padding:100px 2rem 4rem}
+  .section{padding:4rem 1.5rem}
+  .insight-grid,.timeline{grid-template-columns:1fr;gap:1rem}
+  .skills-layout{grid-template-columns:1fr}
+  .counter-bar{grid-template-columns:1fr 1fr;padding:3rem 1.5rem}
+  nav{padding:0 1.5rem}
+  .nav-links{display:none}
+  .letter-wrap{padding:2rem 1.5rem}
+}
+@media(max-width:600px){
+  .counter-bar{grid-template-columns:1fr 1fr;padding:2rem 1rem}
+  .counter-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.1)}
+  .hero-name{font-size:2.8rem}
+  .closing-big{font-size:2rem}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div id="progress"></div>
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">BSR × Strata</div>
+  <ul class="nav-links">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#why-strata">Why Strata</a></li>
+    <li><a href="#alignment">Alignment</a></li>
+    <li><a href="#cover-letter">Cover Letter</a></li>
+    <li><a href="#plan">30-60-90</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#closing">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="hero-left">
+    <div class="hero-tag">Application · Strata Decision Technology · 2026</div>
+    <h1 class="hero-name">Bhumanyu<br><span>Singh</span><br>Ranawat</h1>
+    <div class="hero-role">Analyst, Planning &amp; Performance Management</div>
+    <p class="hero-pitch">Where financial modeling meets healthcare operations meets software implementation — I don't just analyze data, I translate it into decisions that move health systems forward.</p>
+    <div class="hero-btns">
+      <a href="#cover-letter" class="btn btn-primary">Read Cover Letter ↓</a>
+      <a href="#plan" class="btn btn-outline">View 30-60-90 Plan</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-num" data-count="4.0" data-dec="1">0</div><div class="stat-label">MS Analytics GPA<br>DePaul University</div></div>
+      <div class="stat-box"><div class="stat-num" data-count="390" data-suf="K+">0</div><div class="stat-label">Records Analyzed<br>@ Morningstar</div></div>
+      <div class="stat-box"><div class="stat-num" data-count="30" data-suf="%">0</div><div class="stat-label">Analysis Time<br>Reduction</div></div>
+      <div class="stat-box"><div class="stat-num" data-count="100" data-suf="%">0</div><div class="stat-label">UAT Defects<br>Resolved Pre-Launch</div></div>
+      <div class="stat-box"><div class="stat-num" data-count="3" data-suf="+">0</div><div class="stat-label">Industries:<br>HC · Finance · Pharma</div></div>
+      <div class="stat-box"><div class="stat-num" style="font-size:1.5rem;letter-spacing:-.02em">Chicago</div><div class="stat-label">Local Candidate<br>Ready Day One</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY STRATA -->
+<section id="why-strata" class="section section-dark">
+  <div class="section-header reveal">
+    <span class="sec-num">01</span>
+    <h2 class="sec-title">Why Strata. Why Now.</h2>
+    <div class="sec-rule"></div>
+  </div>
+  <div class="insight-grid reveal d1">
+    <div class="insight-card"><span class="insight-icon">🏥</span><div class="insight-head">The Platform</div><p class="insight-text">StrataJazz® is the market-leading cloud platform trusted by 2,300+ healthcare organizations for budgeting, forecasting, capital planning, and performance management — Best in KLAS 15+ consecutive years.</p></div>
+    <div class="insight-card"><span class="insight-icon">📉</span><div class="insight-head">The Crisis</div><p class="insight-text">Hospital margins sit near 1–2% in 2025 while total expenses climb above 5% YoY. Drug costs spiked 9.8%. Labor remains the single largest driver. Every budget miscalculation has patient-care consequences.</p></div>
+    <div class="insight-card"><span class="insight-icon">❄️</span><div class="insight-head">2025 Innovation</div><p class="insight-text">Strata partnered with Snowflake to build one of the largest comparable healthcare financial databases in the U.S. — and launched StrataJazz® Position Control to automate labor planning at scale.</p></div>
+    <div class="insight-card"><span class="insight-icon">⚡</span><div class="insight-head">Why This Role Exists</div><p class="insight-text">Health systems need implementation analysts who bridge StrataJazz's capabilities with each client's financial workflows — configuring models, validating logic, training cross-functional teams.</p></div>
+    <div class="insight-card"><span class="insight-icon">🔗</span><div class="insight-head">Cross-Functional Edge</div><p class="insight-text">Leading health systems like Emory are bridging finance, clinical, and revenue-cycle teams. Analysts who speak all three languages are Strata's core competitive advantage.</p></div>
+    <div class="insight-card"><span class="insight-icon">🚀</span><div class="insight-head">Growth Trajectory</div><p class="insight-text">With Snowflake, AI/ML capabilities, and Position Control in active rollout, Strata is expanding rapidly — making implementation talent a strategic investment, not just a support hire.</p></div>
+  </div>
+  <div class="thesis-box reveal d2">
+    <p>"Healthcare finance isn't just about compliance — it's about sustaining the mission to care. StrataJazz turns data into decisions, and I want to be the analyst who makes that translation happen for health systems across the country."</p>
+  </div>
+</section>
+
+<!-- COUNTERS -->
+<div class="counter-bar" id="counters">
+  <div class="counter-item"><div class="counter-val" data-target="390" data-suf="K+">0</div><div class="counter-label">Records Analyzed</div></div>
+  <div class="counter-item"><div class="counter-val" data-target="30" data-suf="%">0</div><div class="counter-label">Analysis Time Cut</div></div>
+  <div class="counter-item"><div class="counter-val" data-target="100" data-suf="%">0</div><div class="counter-label">UAT Defects Resolved</div></div>
+  <div class="counter-item"><div class="counter-val" data-target="25" data-suf="%">0</div><div class="counter-label">Reporting Adoption Lift</div></div>
+</div>
+
+<!-- ALIGNMENT -->
+<section id="alignment" class="section section-light">
+  <div class="section-header reveal">
+    <span class="sec-num" style="color:var(--teal)">02</span>
+    <h2 class="sec-title">Requirement ↔ Experience Alignment</h2>
+    <div class="sec-rule" style="background:var(--line)"></div>
+  </div>
+  <div class="tabs-nav reveal">
+    <button class="tab-btn active" onclick="switchTab(event,'tab-core')">Core Requirements</button>
+    <button class="tab-btn" onclick="switchTab(event,'tab-tools')">Domain &amp; Tools</button>
+    <button class="tab-btn" onclick="switchTab(event,'tab-soft')">Leadership &amp; Soft Skills</button>
+  </div>
+  <div id="tab-core" class="tab-panel active reveal d1">
+    <table class="align-table">
+      <thead><tr><th>Strata Needs</th><th>My Experience</th><th>Impact</th></tr></thead>
+      <tbody>
+        <tr><td>Financial Modeling &amp; Capital Planning</td><td>DCF/WACC models (Tata Steel, NextEra); cash-flow forecasting at DNS Hospitals</td><td><span class="impact">+12% forecast accuracy</span></td></tr>
+        <tr><td>ERP Systems (SAP / Oracle)</td><td>SAP ERP — vendor payment analysis at Macleods; KPI tracking at DNS Hospitals</td><td><span class="impact">–15% payment delays</span></td></tr>
+        <tr><td>Software Implementation &amp; UAT</td><td>Led full UAT at DNS Hospitals — documented test cases, resolved 100% defects pre-launch</td><td><span class="impact">–15% processing time</span></td></tr>
+        <tr><td>SQL &amp; Data Analysis at Scale</td><td>390K+ records at Morningstar using SQL + Python; classification + validation logic</td><td><span class="impact">–30% analysis time</span></td></tr>
+        <tr><td>Dashboard &amp; Reporting</td><td>Power BI + Tableau at Morningstar used in governance discussions; healthcare KPI dashboard</td><td><span class="impact">Governance-level impact</span></td></tr>
+        <tr><td>Requirements Gathering &amp; BRD</td><td>BRDs + User Stories at Macleods for reporting automation initiatives</td><td><span class="impact">+25% adoption</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="tab-tools" class="tab-panel reveal d1">
+    <table class="align-table">
+      <thead><tr><th>Tool / Domain</th><th>Proficiency</th><th>Where Applied</th></tr></thead>
+      <tbody>
+        <tr><td>SQL</td><td>Joins, Window Functions, complex queries on 390K+ records</td><td>Morningstar — standardization + validation</td></tr>
+        <tr><td>Power BI</td><td>Dashboard design, governance reporting, healthcare KPI tracking</td><td>Morningstar, DNS Hospitals, Macleods</td></tr>
+        <tr><td>SAP ERP</td><td>Vendor payment analysis, KPI configuration, financial reporting</td><td>DNS Hospitals, Macleods Pharma</td></tr>
+        <tr><td>Excel (Advanced)</td><td>Power Query, Pivot Tables, VLOOKUP, DCF models, scenario analysis</td><td>DNS Hospitals, Financial Modeling Projects</td></tr>
+        <tr><td>Python</td><td>Pandas, data analysis, automation of 390K record workflows</td><td>Morningstar</td></tr>
+        <tr><td>Healthcare Finance</td><td>Hospital billing, cash-flow, UAT, KPIs, operational planning — 1+ year direct</td><td>DNS Hospitals</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="tab-soft" class="tab-panel reveal d1">
+    <table class="align-table">
+      <thead><tr><th>Competency</th><th>Evidence</th></tr></thead>
+      <tbody>
+        <tr><td>Stakeholder Communication</td><td>Translated requirements into configuration specs at Morningstar and Macleods; presented to finance leadership at DNS Hospitals</td></tr>
+        <tr><td>Process Improvement</td><td>Reengineered billing workflows, month-end close processes, and approval workflows across 3 organizations</td></tr>
+        <tr><td>Cross-Functional Collaboration</td><td>Worked alongside finance, clinical, operations, and technology teams in healthcare and pharma settings</td></tr>
+        <tr><td>Root Cause Analysis</td><td>Identified and resolved classification discrepancies at Morningstar; 100% UAT defect resolution at DNS Hospitals pre-launch</td></tr>
+        <tr><td>Leadership</td><td>Captain, State/National medal-winning Shooting team — coordinated strategy and training for competitive team</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- COVER LETTER -->
+<section id="cover-letter" class="section section-cream">
+  <div class="section-header reveal">
+    <span class="sec-num" style="color:var(--teal)">03</span>
+    <h2 class="sec-title">Cover Letter</h2>
+    <div class="sec-rule" style="background:var(--line)"></div>
+  </div>
+  <div class="letter-wrap reveal">
+    <div class="letter-date">March 2026</div>
+    <div class="letter-addr"><p><strong>Hiring Team</strong><br>Strata Decision Technology<br>Chicago, Illinois</p></div>
+    <div class="letter-body">
+      <p>Dear Strata Decision Technology Hiring Team,</p>
+      <p>Hospital CFOs today are navigating one of the most financially demanding periods in recent history. With health system operating margins hovering near 1–2% and non-labor expenses climbing above 5% year-over-year, <strong>every budget assumption, every forecast, every capital planning decision carries weight.</strong> StrataJazz® exists precisely to give healthcare finance leaders the data infrastructure to make those decisions with confidence — and I want to be the analyst who builds that infrastructure with them.</p>
+      <p>I am applying for the Analyst, Planning &amp; Performance Management role at Strata Decision Technology. With an MS in Business Analytics from DePaul University (4.0 GPA), hands-on SAP ERP experience, a direct healthcare operations background, and a track record of translating complex data into financial decision tools, <em>I bring the exact combination of finance domain depth, implementation rigor, and analytics capability this role demands.</em></p>
+      <p>At <strong>Morningstar</strong>, I analyzed and standardized 390,000+ investment portfolio records using SQL and Python, reduced downstream analysis time by 30%, and designed Power BI and Tableau dashboards that surfaced data-quality gaps used directly in governance discussions. The work required exactly what StrataJazz implementations demand: translating business requirements into validation logic, configuring reporting outputs, and communicating findings to stakeholders making high-stakes decisions.</p>
+      <p>At <strong>DNS Hospitals</strong>, I led a full UAT cycle for a reengineered approval workflow — documenting test cases, resolving 100% of pre-launch defects, and delivering a 15% reduction in processing time. I built Power BI dashboards via SAP ERP to track revenue and operational KPIs, and reengineered cash-flow forecasting models that improved accuracy by 12%. This is not adjacent experience to what Strata's clients need — <em>it is the experience.</em></p>
+      <p>At <strong>Macleods Pharmaceuticals</strong>, I partnered with finance stakeholders to write BRDs and User Stories for reporting automation, applied SAP ERP analysis to reduce payment delays by 15%, and automated reconciliation workflows that shortened the month-end close by 1.5 days. I understand how enterprise finance systems behave in real organizations — and how to close the gap between what software can do and what clients actually need.</p>
+      <p>Strata's 2025 Snowflake partnership — building one of the largest comparable healthcare financial databases in the U.S. — signals a platform that is accelerating, not standing still. <strong>I am eager to grow alongside that acceleration,</strong> contributing to Capital Planning, Operational Budgeting, and Performance Management implementations as Strata extends its lead in healthcare enterprise performance management.</p>
+      <p>I am based in Chicago, deeply aligned with Strata's mission, and ready to deliver client value from day one. I would welcome the opportunity to speak with your team.</p>
+    </div>
+    <div class="letter-sig">
+      <p style="font-size:.88rem;color:var(--muted)">With genuine enthusiasm,</p>
+      <div class="sig-name">Bhumanyu Singh Ranawat</div>
+      <div class="sig-contact">bhumanyu.singh007@gmail.com &nbsp;·&nbsp; (312) 825-6414 &nbsp;·&nbsp; Chicago, IL</div>
+    </div>
+  </div>
+</section>
+
+<!-- 30-60-90 -->
+<section id="plan" class="section section-dark">
+  <div class="section-header reveal">
+    <span class="sec-num">04</span>
+    <h2 class="sec-title">30 · 60 · 90 Day Plan</h2>
+    <div class="sec-rule"></div>
+  </div>
+  <div class="timeline">
+    <div class="phase phase-1 reveal">
+      <div class="phase-label">Days 1–30</div>
+      <div class="phase-days">30</div>
+      <div class="phase-theme">Learn · Listen · Map</div>
+      <ul>
+        <li>Complete StrataJazz certification via Strata's 90-day onboarding program</li>
+        <li>Shadow senior analysts on Capital Planning &amp; Operating Budgeting implementations</li>
+        <li>Map StrataJazz data model to existing financial modeling knowledge</li>
+        <li>Study client health system structures: budget cycles, cost centers, variance reporting</li>
+        <li>First contribution: documentation, validation, or data-mapping on a live project</li>
+      </ul>
+    </div>
+    <div class="phase phase-2 reveal d2">
+      <div class="phase-label">Days 31–60</div>
+      <div class="phase-days">60</div>
+      <div class="phase-theme">Contribute · Configure · Validate</div>
+      <ul>
+        <li>Lead configuration tasks: financial models, workflows, and reporting in StrataJazz</li>
+        <li>Conduct client requirements sessions — translate finance needs into configuration specs</li>
+        <li>Deliver UAT support: write test cases, execute validation, document resolution</li>
+        <li>Support client training (web + onsite) on Operating Budgeting or Capital Planning</li>
+        <li>Track KPIs: client satisfaction, configuration accuracy, issue resolution speed</li>
+      </ul>
+    </div>
+    <div class="phase phase-3 reveal d3">
+      <div class="phase-label">Days 61–90</div>
+      <div class="phase-days">90</div>
+      <div class="phase-theme">Lead · Optimize · Deliver</div>
+      <ul>
+        <li>Lead ≥1 implementation workstream end-to-end: requirements through go-live</li>
+        <li>Proactively identify workflow optimizations that reduce configuration time</li>
+        <li>Contribute to internal playbooks, process documentation, training content</li>
+        <li>Establish trusted-advisor status with client finance stakeholders</li>
+        <li>Present 90–180 day growth plan to manager with skill development areas</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="section section-light">
+  <div class="section-header reveal">
+    <span class="sec-num" style="color:var(--teal)">05</span>
+    <h2 class="sec-title">The Skillset That Matters</h2>
+    <div class="sec-rule" style="background:var(--line)"></div>
+  </div>
+  <div class="skills-layout">
+    <div class="reveal" id="skillbars">
+      <div style="margin-bottom:2rem">
+        <div class="skill-cat-title">Financial Analytics</div>
+        <div class="skill-bar-group"><div class="skill-bar-label"><span>Financial Modeling / DCF</span><span>Expert</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-w="92"></div></div></div>
+        <div class="skill-bar-group"><div class="skill-bar-label"><span>Cash Flow Forecasting</span><span>Expert</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-w="88"></div></div></div>
+        <div class="skill-bar-group"><div class="skill-bar-label"><span>Variance &amp; Scenario Analysis</span><span>Advanced</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-w="85"></div></div></div>
+      </div>
+      <div style="margin-bottom:2rem">
+        <div class="skill-cat-title">Analytics Tools</div>
+        <div class="skill-bar-group"><div class="skill-bar-label"><span>SQL (Joins, Window Functions)</span><span>Advanced</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-w="88"></div></div></div>
+        <div class="skill-bar-group"><div class="skill-bar-label"><span>Power BI / Tableau</span><span>Expert</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-w="90"></div></div></div>
+        <div class="skill-bar-group"><div class="skill-bar-label"><span>Excel (Advanced + Power Query)</span><span>Expert</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-w="95"></div></div></div>
+        <div class="skill-bar-group"><div class="skill-bar-label"><span>SAP ERP</span><span>Proficient</span></div><div class="skill-bar-track"><div class="skill-bar-fill gold" data-w="78"></div></div></div>
+        <div class="skill-bar-group"><div class="skill-bar-label"><span>Python (Pandas)</span><span>Proficient</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-w="75"></div></div></div>
+      </div>
+      <div>
+        <div class="skill-cat-title">Implementation &amp; BA</div>
+        <div class="skill-bar-group"><div class="skill-bar-label"><span>UAT Leadership</span><span>Expert</span></div><div class="skill-bar-track"><div class="skill-bar-fill gold" data-w="92"></div></div></div>
+        <div class="skill-bar-group"><div class="skill-bar-label"><span>Requirements / BRD / User Stories</span><span>Expert</span></div><div class="skill-bar-track"><div class="skill-bar-fill gold" data-w="88"></div></div></div>
+        <div class="skill-bar-group"><div class="skill-bar-label"><span>Healthcare Finance Domain</span><span>Advanced</span></div><div class="skill-bar-track"><div class="skill-bar-fill gold" data-w="82"></div></div></div>
+      </div>
+    </div>
+    <div class="reveal d2">
+      <div style="font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:1.5rem">Unique Value to Strata Clients</div>
+      <div class="value-card"><div class="value-card-title">The Finance Bridge</div><div class="value-card-text">I speak CFO. With real DCF modeling, healthcare budgeting experience, and SAP ERP fluency, I understand what health system finance teams are actually trying to achieve — not just what software they're configuring.</div></div>
+      <div class="value-card" style="border-left-color:var(--gold)"><div class="value-card-title">The Implementation Anchor</div><div class="value-card-text">100% UAT defect resolution, BRD writing, and process reengineering mean I don't just analyze — I ship. Implementations stay on track when analysts anticipate edge cases before they become go-live issues.</div></div>
+      <div class="value-card" style="border-left-color:#a78bfa"><div class="value-card-title">The Data Layer</div><div class="value-card-text">SQL, Python, Power BI, and Tableau mean I can work directly with StrataJazz's data layer — building reports, validating outputs, and surfacing insights finance leaders can act on immediately.</div></div>
+      <div class="value-card" style="border-left-color:var(--teal2)"><div class="value-card-title">Local + Mobile</div><div class="value-card-text">Chicago-based with 20–35% travel readiness. Already in Strata's home market, positioned to show up onsite with client teams when it matters most.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="section section-cream">
+  <div class="section-header reveal">
+    <span class="sec-num" style="color:var(--teal)">06</span>
+    <h2 class="sec-title">Experience That Maps Directly</h2>
+    <div class="sec-rule" style="background:var(--line)"></div>
+  </div>
+  <div class="reveal">
+    <div class="exp-item open" id="exp-1">
+      <div class="exp-header" onclick="toggleExp('exp-1')">
+        <div><div class="exp-co">Morningstar</div><div class="exp-role-name">Business Analyst — Investment Data Operations</div><div class="exp-period">Sep 2025 – Dec 2025 · Chicago, IL</div></div>
+        <span class="exp-chevron">⌄</span>
+      </div>
+      <div class="exp-body">
+        <ul>
+          <li>Analyzed and standardized <span class="hi">390,000+ investment portfolio records</span> using SQL and Python — the scale and precision maps directly to StrataJazz data validation at large health system clients</li>
+          <li>Designed Power BI and Tableau dashboards to surface category overlaps, data-quality gaps, and performance metrics used in governance discussions — exactly the reporting deliverables StrataJazz implementations require</li>
+          <li>Translated stakeholder requirements into classification rules, validation checks, and reporting logic — the same requirement-to-configuration workflow central to this role</li>
+          <li>Root-cause analysis on discrepancies; fixes that reduced <span class="hi">manual review effort by 30%</span></li>
+        </ul>
+        <div class="exp-tags"><span class="exp-tag">SQL</span><span class="exp-tag">Power BI</span><span class="exp-tag">Tableau</span><span class="exp-tag">Python</span><span class="exp-tag">Data Governance</span></div>
+      </div>
+    </div>
+    <div class="exp-item" id="exp-2">
+      <div class="exp-header" onclick="toggleExp('exp-2')">
+        <div><div class="exp-co">DNS Hospitals</div><div class="exp-role-name">Business Analyst — Healthcare Operations</div><div class="exp-period">Jul 2023 – Jun 2024 · India</div></div>
+        <span class="exp-chevron">⌄</span>
+      </div>
+      <div class="exp-body">
+        <ul>
+          <li>Led UAT for reengineered approval workflow — resolved <span class="hi">100% of pre-launch defects</span>, delivering 15% reduction in processing time</li>
+          <li>Reengineered cash-flow forecasting workflows using advanced Excel models — <span class="hi">improved forecast accuracy by 12%</span></li>
+          <li>KPI tracking via Power BI and SAP ERP — enabling clearer revenue visibility and supporting management decision-making</li>
+          <li>Built interactive Power BI dashboard for patient flow, utilization, revenue, and capacity — identical to StrataJazz Performance Management outputs</li>
+        </ul>
+        <div class="exp-tags"><span class="exp-tag">UAT</span><span class="exp-tag">SAP ERP</span><span class="exp-tag">Healthcare Finance</span><span class="exp-tag">Power BI</span><span class="exp-tag">KPI Design</span></div>
+      </div>
+    </div>
+    <div class="exp-item" id="exp-3">
+      <div class="exp-header" onclick="toggleExp('exp-3')">
+        <div><div class="exp-co">Macleods Pharmaceuticals</div><div class="exp-role-name">Business Analyst — Financial Operations</div><div class="exp-period">Jun 2024 – Oct 2024 · India</div></div>
+        <span class="exp-chevron">⌄</span>
+      </div>
+      <div class="exp-body">
+        <ul>
+          <li>BRDs + User Stories for reporting automation — <span class="hi">increased reporting adoption by 25%</span></li>
+          <li>SAP ERP vendor payment analysis — identified bottlenecks, <span class="hi">reduced payment delays by 15%</span></li>
+          <li>Power Query reconciliation automation — <span class="hi">improved accuracy 20%</span>, shortened month-end close 1.5 days</li>
+          <li>Process maps and operating model recommendations for scalable financial controls</li>
+        </ul>
+        <div class="exp-tags"><span class="exp-tag">BRD</span><span class="exp-tag">SAP ERP</span><span class="exp-tag">Power Query</span><span class="exp-tag">Process Mapping</span><span class="exp-tag">R2R</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section id="closing">
+  <h2 class="closing-big reveal">The right analyst<br><em>at the right company</em><br>at the right time.</h2>
+  <p class="closing-sub reveal d1">Healthcare finance is at an inflection point. Strata is building the platform that helps health systems navigate it. I'm ready to implement that platform — and deliver measurable value to every client I touch.</p>
+  <div class="contact-pills reveal d2">
+    <a href="mailto:bhumanyu.singh007@gmail.com" class="contact-pill">📧 bhumanyu.singh007@gmail.com</a>
+    <a href="tel:3128256414" class="contact-pill">📞 (312) 825-6414</a>
+    <a href="https://www.linkedin.com/in/bhumanyuranawat" target="_blank" class="contact-pill">💼 LinkedIn Profile</a>
+    <span class="contact-pill">📍 Chicago, IL</span>
+  </div>
+</section>
+
+<script>
+// CURSOR
+const cur = document.getElementById('cursor'), ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function tick(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cur.style.left=mx+'px';cur.style.top=my+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(tick)})();
+document.querySelectorAll('a,button,.insight-card,.stat-box,.exp-header,.tab-btn,.value-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';cur.style.background='var(--gold)';ring.style.opacity='.15'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='10px';cur.style.height='10px';cur.style.background='var(--teal)';ring.style.opacity='.45'});
+});
+
+// PROGRESS + NAV + SCROLL TOP
+const prog=document.getElementById('progress'),st=document.getElementById('scroll-top'),nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  prog.style.width=(window.scrollY/(document.body.scrollHeight-window.innerHeight)*100)+'%';
+  st.classList.toggle('show',window.scrollY>400);
+  nav.classList.toggle('scrolled',window.scrollY>10);
+  activeNav();triggerCounters();triggerBars();
+});
+
+// ACTIVE NAV
+function activeNav(){
+  let cur='';
+  document.querySelectorAll('section[id]').forEach(s=>{if(window.scrollY>=s.offsetTop-90)cur=s.id});
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
+}
+
+// REVEAL
+const ro=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+// COUNTERS
+let cdone=false;
+function triggerCounters(){
+  if(cdone)return;
+  const r=document.getElementById('counters').getBoundingClientRect();
+  if(r.top<window.innerHeight*.85){
+    cdone=true;
+    document.querySelectorAll('.counter-val[data-target]').forEach(el=>animNum(el,+el.dataset.target,el.dataset.suf||'',0));
+    document.querySelectorAll('.stat-num[data-count]').forEach(el=>animNum(el,+el.dataset.count,el.dataset.suf||'',+(el.dataset.dec||0)));
+  }
+}
+function animNum(el,target,suf,dec){
+  const dur=1600,s=performance.now();
+  (function f(now){
+    const t=Math.min((now-s)/dur,1),v=target*(1-Math.pow(1-t,3));
+    el.textContent=(dec?v.toFixed(dec):Math.round(v))+suf;
+    if(t<1)requestAnimationFrame(f);
+  })(s);
+}
+// Hero stats on load
+window.addEventListener('load',()=>setTimeout(()=>{
+  document.querySelectorAll('.stat-num[data-count]').forEach(el=>animNum(el,+el.dataset.count,el.dataset.suf||'',+(el.dataset.dec||0)));
+},500));
+
+// SKILL BARS
+let bdone=false;
+function triggerBars(){
+  if(bdone)return;
+  const sb=document.getElementById('skillbars');
+  if(!sb)return;
+  if(sb.getBoundingClientRect().top<window.innerHeight*.85){
+    bdone=true;
+    document.querySelectorAll('.skill-bar-fill[data-w]').forEach((b,i)=>setTimeout(()=>b.style.width=b.dataset.w+'%',i*70));
+  }
+}
+
+// TABS
+function switchTab(e,id){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// ACCORDION
+function toggleExp(id){
+  const item=document.getElementById(id),isOpen=item.classList.contains('open');
+  document.querySelectorAll('.exp-item').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+
+// SMOOTH SCROLL
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
+  const t=document.querySelector(a.getAttribute('href'));
+  if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}
+}));
+</script>
+</body>
+</html>
